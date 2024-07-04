@@ -1,8 +1,9 @@
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
-import { ChangeEvent, useState, FormEvent, useEffect } from "react";
-import { Link } from "react-router-dom";
 
-function CreateStudent() {
+function UpdateStudent() {
+  const { student_id } = useParams();
   const [state, setState] = useState({
     first_name: "",
     middle_name: "",
@@ -10,14 +11,16 @@ function CreateStudent() {
   });
 
   useEffect(() => {
-    const csrfToken = document
-      .querySelector("meta[name='csrf-token']")
-      ?.getAttribute("content");
+    const fetchStudent = async () => {
+      const res = await axios.get(
+        `http://127.0.0.1:8000/api/student/edit/${student_id}`
+      );
+      const { first_name, middle_name, last_name } = res.data.student;
+      setState({ first_name, middle_name, last_name });
+    };
 
-    if (csrfToken) {
-      axios.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
-    }
-  });
+    fetchStudent();
+  }, [student_id]);
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,21 +30,19 @@ function CreateStudent() {
     }));
   };
 
-  const saveStudent = async (e: FormEvent) => {
+  const saveStudentChanges = async (e: FormEvent) => {
     e.preventDefault();
 
-    const res = await axios.post(
-      "http://127.0.0.1:8000/api/student/store",
-      state
-    );
+    const csrfToken = document
+      .querySelector("meta[name='csrf-token']")
+      ?.getAttribute("content");
 
-    if (res.data.status == 200) {
-      setState({
-        first_name: "",
-        middle_name: "",
-        last_name: "",
-      });
-    }
+    const res = await axios.put(
+      `http://127.0.0.1:8000/api/student/update/${student_id}`,
+      state,
+      { headers: { "X-CSRF-TOKEN": csrfToken } }
+    );
+    console.log(res.data);
   };
 
   return (
@@ -54,7 +55,7 @@ function CreateStudent() {
           </Link>
         </div>
         <div className="card-body">
-          <form onSubmit={saveStudent}>
+          <form onSubmit={saveStudentChanges}>
             <div className="mb-3">
               <label htmlFor="first_name">First Name</label>
               <input
@@ -98,4 +99,4 @@ function CreateStudent() {
   );
 }
 
-export default CreateStudent;
+export default UpdateStudent;

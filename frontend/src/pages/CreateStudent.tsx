@@ -10,13 +10,7 @@ function CreateStudent() {
   });
 
   useEffect(() => {
-    const csrfToken = document
-      .querySelector("meta[name='csrf-token']")
-      ?.getAttribute("content");
-
-    if (csrfToken) {
-      axios.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
-    }
+    document.title = "Create Student";
   });
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,9 +24,14 @@ function CreateStudent() {
   const saveStudent = async (e: FormEvent) => {
     e.preventDefault();
 
+    const csrfToken = document
+      .querySelector("meta[name='csrf-token']")
+      ?.getAttribute("content");
+
     const res = await axios.post(
       "http://127.0.0.1:8000/api/student/store",
-      state
+      state,
+      { headers: { "X-CSRF-TOKEN": csrfToken } }
     );
 
     if (res.data.status == 200) {

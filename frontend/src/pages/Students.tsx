@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import axios from "axios";
 
 interface Students {
@@ -18,11 +18,15 @@ function Student() {
     loading: true,
   });
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   useEffect(() => {
+    document.title = "List of Students";
+
     const loadStudents = async () => {
       const res = await axios.get("http://127.0.0.1:8000/api/students");
 
-      if (res.status === 200) {
+      if (res.data.status == 200) {
         setState({
           students: res.data.students,
           loading: false,
@@ -37,6 +41,8 @@ function Student() {
 
     loadStudents();
   }, []);
+
+  const handleSearch = async (e: ChangeEvent<HTMLInputElement>) => {};
 
   return (
     <>
@@ -54,12 +60,13 @@ function Student() {
                 <th>First Name</th>
                 <th>Middle Name</th>
                 <th>Last Name</th>
+                <th>Action</th>
               </thead>
               <tbody>
                 {state.loading ? (
                   <tr>
                     <td colSpan={3}>
-                      <h2>Loading...</h2>
+                      <h2 className="ms-3">Loading...</h2>
                     </td>
                   </tr>
                 ) : (
@@ -75,6 +82,12 @@ function Student() {
                             className="btn btn-success"
                           >
                             Update
+                          </Link>
+                          <Link
+                            to={`/student/delete/${student.student_id}`}
+                            className="btn btn-danger"
+                          >
+                            Delete
                           </Link>
                         </div>
                       </td>

@@ -17,10 +17,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(StudentController::class)->group(function () {
     Route::get('/students', 'index');
+    Route::get('/students/search', 'search');
     Route::get('/student/edit/{student_id}', 'edit');
+    Route::get('/student/delete/{student_id}', 'delete');
 
     Route::post('/student/store', 'store');
-    Route::put('/student/update/{student_id}', 'update');
+    Route::put('/student/update/{student}', 'update');
+    Route::delete('/student/destroy/{student}', 'destroy');
 });
 
 

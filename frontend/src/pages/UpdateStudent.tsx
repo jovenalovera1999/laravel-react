@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
+import ToastMessage from "../components/ToastMessage";
 
 function UpdateStudent() {
   const { student_id } = useParams();
@@ -10,13 +11,22 @@ function UpdateStudent() {
     last_name: "",
   });
 
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastMessageSuccess, setToastMessageSuccess] = useState(false);
+  const [toastMessageVisible, setToastMessageVisible] = useState(false);
+
   useEffect(() => {
+    document.title = "Update Student";
+
     const fetchStudent = async () => {
       const res = await axios.get(
         `http://127.0.0.1:8000/api/student/edit/${student_id}`
       );
-      const { first_name, middle_name, last_name } = res.data.student;
-      setState({ first_name, middle_name, last_name });
+
+      if (res.data.status == 200) {
+        const { first_name, middle_name, last_name } = res.data.student;
+        setState({ first_name, middle_name, last_name });
+      }
     };
 
     fetchStudent();
@@ -42,11 +52,22 @@ function UpdateStudent() {
       state,
       { headers: { "X-CSRF-TOKEN": csrfToken } }
     );
-    console.log(res.data);
+
+    if (res.data.status == 200) {
+      setToastMessage("Student successfully saved!");
+      setToastMessageSuccess(true);
+      setToastMessageVisible(true);
+    }
   };
 
   return (
     <>
+      <ToastMessage
+        message={toastMessage}
+        success={toastMessageSuccess}
+        visible={toastMessageVisible}
+        onClose={() => setToastMessageVisible(false)}
+      />
       <div className="card m-3 p-3">
         <div className="d-flex justify-content-between align-items-center">
           <h5 className="card-title">Student Form</h5>

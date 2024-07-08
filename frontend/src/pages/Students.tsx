@@ -13,36 +13,60 @@ function Student() {
   const [state, setState] = useState<{
     students: Students[];
     loading: boolean;
+    currentPage: number;
+    lastPage: number;
   }>({
     students: [],
     loading: true,
+    currentPage: 1,
+    lastPage: 1,
   });
 
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     document.title = "List of Students";
-
-    const loadStudents = async () => {
-      const res = await axios.get("http://127.0.0.1:8000/api/students");
-
-      if (res.data.status == 200) {
-        setState({
-          students: res.data.students,
-          loading: false,
-        });
-      } else {
-        setState((prevState) => ({
-          ...prevState,
-          loading: false,
-        }));
-      }
-    };
-
     loadStudents();
-  }, []);
+  }, [state.currentPage, searchQuery]);
 
-  const handleSearch = async (e: ChangeEvent<HTMLInputElement>) => {};
+  const loadStudents = async () => {
+    let url = `http://127.0.0.1:8000/api/students?page=${state.currentPage}`;
+    if (searchQuery) {
+      url = `http://127.0.0.1:8000/api/students/search?page=${state.currentPage}&query=${searchQuery}`;
+    }
+
+    const res = await axios.get(url);
+
+    if (res.data.status == 200) {
+      setState((prevState) => ({
+        ...prevState,
+        students: res.data.students.data,
+        loading: false,
+        currentPage: res.data.students.current_page,
+        lastPage: res.data.students.last_page,
+      }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+      }));
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setState((prevState) => ({
+      ...prevState,
+      currentPage: page,
+    }));
+  };
+
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setState((prevState) => ({
+      ...prevState,
+      currentPage: 1,
+    }));
+  };
 
   return (
     <>
@@ -54,6 +78,32 @@ function Student() {
           </Link>
         </div>
         <div className="card-body">
+          <div className="mb-3">
+            <input
+              type="text"
+              className="form-control"
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+          </div>
+          <div className="d-flex justify-content-end">
+            <div className="btn-group mb-3">
+              <button
+                className="btn btn-primary"
+                disabled={state.currentPage <= 1}
+                onClick={() => handlePageChange(state.currentPage - 1)}
+              >
+                Previous
+              </button>
+              <button
+                className="btn btn-primary"
+                disabled={state.currentPage >= state.lastPage}
+                onClick={() => handlePageChange(state.currentPage + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
           <div className="table-responsive">
             <table className="table">
               <thead>
@@ -96,6 +146,24 @@ function Student() {
                 )}
               </tbody>
             </table>
+          </div>
+          <div className="d-flex justify-content-end">
+            <div className="btn-group">
+              <button
+                className="btn btn-primary"
+                disabled={state.currentPage <= 1}
+                onClick={() => handlePageChange(state.currentPage - 1)}
+              >
+                Previous
+              </button>
+              <button
+                className="btn btn-primary"
+                disabled={state.currentPage >= state.lastPage}
+                onClick={() => handlePageChange(state.currentPage + 1)}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>

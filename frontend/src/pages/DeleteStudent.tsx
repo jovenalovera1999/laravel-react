@@ -52,7 +52,7 @@ function DeleteStudent() {
 
       setTimeout(() => {
         navigate("/", { state: { message: "Student successfully saved!" } });
-      }, 2500);
+      }, 1500);
     }
   };
 

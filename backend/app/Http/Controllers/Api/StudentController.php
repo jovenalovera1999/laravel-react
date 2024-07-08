@@ -11,7 +11,7 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::orderBy('first_name', 'asc')
-            ->get();
+            ->paginate(25);
 
         return response()->json([
             'status' => 200,
@@ -25,7 +25,8 @@ class StudentController extends Controller
         $students = Student::where('first_name', 'like', "%{$query}%")
             ->orWhere('middle_name', 'like', "%{$query}%")
             ->orWhere('last_name', 'like', "%{$query}%")
-            ->get();
+            ->orderBy('first_name', 'asc')
+            ->paginate(25);
 
         return response()->json([
             'status' => 200,

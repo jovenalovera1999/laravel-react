@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::controller(UserController::class)->group(function () {
+    Route::post('/user/store', 'store');
+});
 
 Route::controller(StudentController::class)->group(function () {
     Route::get('/students', 'index');

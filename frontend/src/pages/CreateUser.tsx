@@ -5,16 +5,16 @@ import ToastMessage from "../components/ToastMessage";
 import Navbar from "../components/Navbar";
 
 interface Errors {
-  first_name?: string[];
-  middle_name?: string[];
-  last_name?: string[];
+  name?: string[];
+  username?: string[];
+  password?: string[];
 }
 
-function CreateStudent() {
+function CreateUser() {
   const [state, setState] = useState({
-    first_name: "",
-    middle_name: "",
-    last_name: "",
+    name: "",
+    username: "",
+    password: "",
     errors: {} as Errors,
   });
 
@@ -23,7 +23,7 @@ function CreateStudent() {
   const [toastMessageVisible, setToastMessageVisible] = useState(false);
 
   useEffect(() => {
-    document.title = "Create Student";
+    document.title = "Create User";
   });
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +34,7 @@ function CreateStudent() {
     }));
   };
 
-  const handleSaveStudent = async (e: FormEvent) => {
+  const handleSaveUser = async (e: FormEvent) => {
     e.preventDefault();
 
     const csrfToken = document
@@ -42,20 +42,20 @@ function CreateStudent() {
       ?.getAttribute("content");
 
     await axios
-      .post("http://127.0.0.1:8000/api/student/store", state, {
+      .post("http://127.0.0.1:8000/api/user/store", state, {
         headers: { "X-CSRF-TOKEN": csrfToken },
       })
       .then((res) => {
         if (res.data.status == 200) {
-          setToastMessage("Student successfully added.");
+          setToastMessage("User successfully added.");
           setToastMessageSuccess(true);
           setToastMessageVisible(true);
 
           setState((prevState) => ({
             ...prevState,
-            first_name: "",
-            middle_name: "",
-            last_name: "",
+            name: "",
+            username: "",
+            password: "",
             errors: {},
           }));
         } else {
@@ -82,60 +82,57 @@ function CreateStudent() {
       />
       <Navbar />
       <div className="card m-3 p-3">
-        <div className="d-flex justify-content-between align-items-center">
-          <h5 className="card-title">Student Form</h5>
-          <Link to={"/students"} className="btn btn-primary">
-            Students List
-          </Link>
+        <div className="d-flex justify-content-start">
+          <h5 className="card-title">User Form</h5>
         </div>
         <div className="card-body">
-          <form onSubmit={handleSaveStudent}>
+          <form onSubmit={handleSaveUser}>
             <div className="mb-3">
-              <label htmlFor="first_name">First Name</label>
+              <label htmlFor="name">Name</label>
               <input
                 type="text"
                 className={`form-control ${
-                  state.errors.first_name ? "is-invalid" : ""
+                  state.errors.name ? "is-invalid" : ""
                 }`}
                 onChange={handleInput}
-                value={state.first_name}
-                name="first_name"
-                id="first_name"
+                value={state.name}
+                name="name"
+                id="name"
               />
-              {state.errors.first_name && (
-                <p className="text-danger">{state.errors.first_name[0]}</p>
+              {state.errors.name && (
+                <p className="text-danger">{state.errors.name[0]}</p>
               )}
             </div>
             <div className="mb-3">
-              <label htmlFor="middle_name">Middle Name</label>
+              <label htmlFor="username">Username</label>
               <input
                 type="text"
                 className={`form-control ${
-                  state.errors.middle_name ? "is-invalid" : ""
+                  state.errors.username ? "is-invalid" : ""
                 }`}
                 onChange={handleInput}
-                value={state.middle_name}
-                name="middle_name"
-                id="middle_name"
+                value={state.username}
+                name="username"
+                id="username"
               />
-              {state.errors.middle_name && (
-                <p className="text-danger">{state.errors.middle_name[0]}</p>
+              {state.errors.username && (
+                <p className="text-danger">{state.errors.username[0]}</p>
               )}
             </div>
             <div className="mb-3">
-              <label htmlFor="last_name">Last Name</label>
+              <label htmlFor="password">Password</label>
               <input
-                type="text"
+                type="password"
                 className={`form-control ${
-                  state.errors.last_name ? "is-invalid" : ""
+                  state.errors.password ? "is-invalid" : ""
                 }`}
                 onChange={handleInput}
-                value={state.last_name}
-                name="last_name"
-                id="last_name"
+                value={state.password}
+                name="password"
+                id="password"
               />
-              {state.errors.last_name && (
-                <p className="text-danger">{state.errors.last_name[0]}</p>
+              {state.errors.password && (
+                <p className="text-danger">{state.errors.password[0]}</p>
               )}
             </div>
             <button type="submit" className="btn btn-primary float-end">
@@ -148,4 +145,4 @@ function CreateStudent() {
   );
 }
 
-export default CreateStudent;
+export default CreateUser;

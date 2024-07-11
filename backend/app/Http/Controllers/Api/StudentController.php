@@ -36,10 +36,16 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'first_name' => ['required'],
+            'middle_name' => ['nullable'],
+            'last_name' => ['required']
+        ]);
+
         Student::create([
-            'first_name' => $request->first_name,
-            'middle_name' => $request->middle_name,
-            'last_name' => $request->last_name
+            'first_name' => $validated['first_name'],
+            'middle_name' => $validated['middle_name'],
+            'last_name' => $validated['last_name']
         ]);
 
         return response()->json([
@@ -59,10 +65,16 @@ class StudentController extends Controller
 
     public function update(Request $request, Student $student)
     {
+        $validated = $request->validate([
+            'first_name' => ['required'],
+            'middle_name' => ['nullable'],
+            'last_name' => ['required']
+        ]);
+
         $student->update([
-            'first_name' => $request->first_name,
-            'middle_name' => $request->middle_name,
-            'last_name' => $request->last_name
+            'first_name' => $validated['first_name'],
+            'middle_name' => $validated['middle_name'],
+            'last_name' => $validated['last_name']
         ]);
 
         return response()->json([

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import React, { useState, useEffect, ChangeEvent } from "react";
 import axios from "axios";
+import Navbar from "../components/Navbar";
 
 interface Students {
   student_id: number;
@@ -26,31 +27,38 @@ function Student() {
 
   useEffect(() => {
     document.title = "List of Students";
-    loadStudents();
+    handleLoadStudents();
   }, [state.currentPage, searchQuery]);
 
-  const loadStudents = async () => {
+  const handleLoadStudents = async () => {
     let url = `http://127.0.0.1:8000/api/students?page=${state.currentPage}`;
     if (searchQuery) {
       url = `http://127.0.0.1:8000/api/students/search?page=${state.currentPage}&query=${searchQuery}`;
     }
 
-    const res = await axios.get(url);
+    await axios
+      .get(url)
+      .then((res) => {
+        if (res.data.status == 200) {
+          setState((prevState) => ({
+            ...prevState,
+            students: res.data.students.data,
+            loading: false,
+            currentPage: res.data.students.current_page,
+            lastPage: res.data.students.last_page,
+          }));
+        } else {
+          setState((prevState) => ({
+            ...prevState,
+            loading: false,
+          }));
 
-    if (res.data.status == 200) {
-      setState((prevState) => ({
-        ...prevState,
-        students: res.data.students.data,
-        loading: false,
-        currentPage: res.data.students.current_page,
-        lastPage: res.data.students.last_page,
-      }));
-    } else {
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-      }));
-    }
+          console.error("Unexpected code status: ", res.data.status);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching students:", error);
+      });
   };
 
   const handlePageChange = (page: number) => {
@@ -70,6 +78,7 @@ function Student() {
 
   return (
     <>
+      <Navbar />
       <div className="card m-3 p-3">
         <div className="d-flex justify-content-between align-items-center">
           <h5 className="card-title">Students List</h5>

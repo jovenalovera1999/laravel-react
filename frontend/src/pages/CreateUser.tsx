@@ -43,7 +43,9 @@ function CreateUser() {
 
     await axios
       .post("http://127.0.0.1:8000/api/user/store", state, {
-        headers: { "X-CSRF-TOKEN": csrfToken },
+        headers: {
+          "X-CSRF-TOKEN": csrfToken,
+        },
       })
       .then((res) => {
         if (res.data.status == 200) {
@@ -68,6 +70,8 @@ function CreateUser() {
             ...prevState,
             errors: error.response.data.errors,
           }));
+        } else {
+          console.error("Unexpected error: ", error);
         }
       });
   };

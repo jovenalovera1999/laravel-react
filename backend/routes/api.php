@@ -22,17 +22,23 @@ Route::controller(UserController::class)->group(function () {
     Route::post('/user/process/login', 'processLogin');
 });
 
-Route::controller(StudentController::class)->group(function () {
-    Route::get('/students', 'index');
-    Route::get('/students/search', 'search');
-    Route::get('/student/edit/{student_id}', 'edit');
-    Route::get('/student/delete/{student_id}', 'delete');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::controller(StudentController::class)->group(function () {
+        Route::get('/students', 'index');
+        Route::get('/students/search', 'search');
+        Route::get('/student/edit/{student_id}', 'edit');
+        Route::get('/student/delete/{student_id}', 'delete');
 
-    Route::post('/student/store', 'store');
-    Route::put('/student/update/{student}', 'update');
-    Route::delete('/student/destroy/{student}', 'destroy');
+        Route::post('/student/store', 'store');
+        Route::put('/student/update/{student}', 'update');
+        Route::delete('/student/destroy/{student}', 'destroy');
+    });
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });

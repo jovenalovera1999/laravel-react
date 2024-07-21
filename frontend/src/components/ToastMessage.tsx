@@ -15,11 +15,12 @@ function ToastMessage({
     if (visible) {
       const timer = setTimeout(() => {
         onClose();
-      }, 2500);
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
   }, [visible, onClose]);
+
   return (
     <>
       <div aria-live="polite" aria-atomic="true" className="position-relative">

@@ -31,13 +31,19 @@ function Student() {
   }, [state.currentPage, searchQuery]);
 
   const handleLoadStudents = async () => {
+    const token = localStorage.getItem("auth_token");
+
     let url = `http://127.0.0.1:8000/api/students?page=${state.currentPage}`;
     if (searchQuery) {
       url = `http://127.0.0.1:8000/api/students/search?page=${state.currentPage}&query=${searchQuery}`;
     }
 
     await axios
-      .get(url)
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         if (res.data.status == 200) {
           setState((prevState) => ({

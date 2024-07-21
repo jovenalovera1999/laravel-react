@@ -1,6 +1,6 @@
 import axios from "axios";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ToastMessage from "../components/ToastMessage";
 
 interface Errors {
@@ -16,10 +16,19 @@ function Login() {
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastMessageSuccess, setToastMessageSuccess] = useState(false);
   const [toastMessageVisible, setToastMessageVisible] = useState(false);
+
+  useEffect(() => {
+    if (location.state && location.state.message) {
+      setToastMessage(location.state.message);
+      setToastMessageSuccess(location.state.success);
+      setToastMessageVisible(true);
+    }
+  }, [location.state]);
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -49,6 +58,8 @@ function Login() {
             errors: {},
           }));
 
+          localStorage.setItem("auth_token", res.data.token);
+
           navigate("/students");
         } else {
           setToastMessage("Incorrect Username or Password, Please try again.");
@@ -59,7 +70,9 @@ function Login() {
         }
       })
       .catch((error) => {
-        if (error.response && error.response.data.errors) {
+        if (error.response && error.response.status == 401) {
+          navigate("/");
+        } else if (error.response && error.response.data.errors) {
           setState((prevState) => ({
             ...prevState,
             errors: error.response.data.errors,
@@ -70,13 +83,18 @@ function Login() {
       });
   };
 
+  const handleCloseToast = () => {
+    setToastMessage("");
+    setToastMessageVisible(false);
+  };
+
   return (
     <>
       <ToastMessage
         message={toastMessage}
         success={toastMessageSuccess}
         visible={toastMessageVisible}
-        onClose={() => setToastMessageVisible(false)}
+        onClose={handleCloseToast}
       />
       <div className="container-fluid">
         <div className="d-flex justify-content-center">

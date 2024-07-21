@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ChangeEvent, useState, FormEvent, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ToastMessage from "../components/ToastMessage";
 import Navbar from "../components/Navbar";
 
@@ -17,6 +17,8 @@ function CreateStudent() {
     last_name: "",
     errors: {} as Errors,
   });
+
+  const navigate = useNavigate();
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastMessageSuccess, setToastMessageSuccess] = useState(false);
@@ -37,13 +39,18 @@ function CreateStudent() {
   const handleSaveStudent = async (e: FormEvent) => {
     e.preventDefault();
 
+    // const token = localStorage.getItem("auth_token");
+
     const csrfToken = document
       .querySelector("meta[name='csrf-token']")
       ?.getAttribute("content");
 
     await axios
       .post("http://127.0.0.1:8000/api/student/store", state, {
-        headers: { "X-CSRF-TOKEN": csrfToken },
+        headers: {
+          // Authorization: `Bearer ${token}`,
+          "X-CSRF-TOKEN": csrfToken,
+        },
       })
       .then((res) => {
         if (res.data.status == 200) {
@@ -63,7 +70,14 @@ function CreateStudent() {
         }
       })
       .catch((error) => {
-        if (error.response && error.response.data.errors) {
+        if (error.response && error.response.status == 401) {
+          navigate("/", {
+            state: {
+              message: "Unauthorized, please login your valid credentials!",
+              success: false,
+            },
+          });
+        } else if (error.response && error.response.data.errors) {
           setState((prevState) => ({
             ...prevState,
             errors: error.response.data.errors,

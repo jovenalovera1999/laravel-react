@@ -7,6 +7,8 @@ import UpdateStudent from "./pages/UpdateStudent";
 import DeleteStudent from "./pages/DeleteStudent";
 
 function App() {
+  const isAuthenticated = !!localStorage.getItem("auth_token");
+
   return (
     <Router>
       <Routes>

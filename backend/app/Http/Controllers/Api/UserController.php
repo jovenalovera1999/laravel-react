@@ -13,12 +13,18 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'max:55'],
+            'age' => ['required', 'numeric'],
+            'gender' => ['required'],
+            'birth_date' => ['required', 'date'],
             'username' => ['required', 'min:6', 'max:12'],
             'password' => ['required', 'min:6', 'max:15']
         ]);
 
         User::create([
             'name' => $validated['name'],
+            'age' => $validated['age'],
+            'gender_id' => $validated['gender'],
+            'birth_date' => $validated['birth_date'],
             'username' => $validated['username'],
             'password' => bcrypt($validated['password'])
         ]);

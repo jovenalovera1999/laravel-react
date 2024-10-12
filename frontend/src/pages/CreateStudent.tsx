@@ -39,7 +39,7 @@ function CreateStudent() {
   const handleSaveStudent = async (e: FormEvent) => {
     e.preventDefault();
 
-    // const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("auth_token");
 
     const csrfToken = document
       .querySelector("meta[name='csrf-token']")
@@ -48,7 +48,7 @@ function CreateStudent() {
     await axios
       .post("http://127.0.0.1:8000/api/student/store", state, {
         headers: {
-          // Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "X-CSRF-TOKEN": csrfToken,
         },
       })

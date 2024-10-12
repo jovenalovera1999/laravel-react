@@ -14,9 +14,14 @@ return new class extends Migration
         Schema::create('tbl_users', function (Blueprint $table) {
             $table->id('user_id');
             $table->string('name', 55);
+            $table->integer('age');
+            $table->unsignedBigInteger('gender_id');
+            $table->date('birth_date');
             $table->string('username', 55);
             $table->string('password', 255);
             $table->timestamps();
+
+            $table->foreign('gender_id')->references('gender_id')->on('tbl_genders')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

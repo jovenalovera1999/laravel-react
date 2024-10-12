@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Gender;
 use App\Models\Student;
 use Illuminate\Database\Seeder;
 
@@ -20,6 +21,18 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        Gender::factory()->create([
+            'gender' => 'Male'
+        ]);
+
+        Gender::factory()->create([
+            'gender' => 'Female'
+        ]);
+
+        Gender::factory()->create([
+            'gender' => 'Others'
+        ]);
 
         Student::factory(300)->create();
     }
